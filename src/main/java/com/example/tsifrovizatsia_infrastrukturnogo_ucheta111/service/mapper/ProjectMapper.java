@@ -2,6 +2,7 @@ package com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.service.mapper;
 
 
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.ProjectEntity;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 import ru.example.infrastructure.web.model.ProjectResponse;
 
@@ -12,7 +13,13 @@ public class ProjectMapper {
         ProjectResponse dto = new ProjectResponse();
         dto.setId(e.getId());
         dto.setName(e.getName());
-        dto.setServerCount(e.getServers() != null ? e.getServers().size() : 0);
+
+        // Если коллекция загружена — берём size, иначе 0
+        if (Hibernate.isInitialized(e.getServers())) {
+            dto.setServerCount(e.getServers().size());
+        } else {
+            dto.setServerCount(0);
+        }
         return dto;
     }
 }

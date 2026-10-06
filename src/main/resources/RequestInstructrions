@@ -1,0 +1,156 @@
+Шаг 1. Создать проект
+POST http://localhost:8080/api/projects
+
+Body:
+
+json
+{
+  "name": "ЕЦП"
+}
+Ожидаемый ответ:
+
+json
+{
+  "id": 1,
+  "name": "ЕЦП",
+  "serverCount": 0
+}
+📌 Запомните id — это projectId для следующего шага.
+
+Проверить, что проект создан
+GET http://localhost:8080/api/projects
+
+Body: нет.
+
+Ответ:
+
+json
+[
+  { "id": 1, "name": "ЕЦП", "serverCount": 0 }
+]
+Шаг 2. Создать сервер
+POST http://localhost:8080/api/servers
+
+Body:
+
+json
+{
+  "hostname": "srv-app-01",
+  "ipAddress": "10.0.0.1",
+  "role": "app",
+  "environment": "dev",
+  "operatingSystem": "Ubuntu 22.04",
+  "cpuCores": 8,
+  "ramGb": 32,
+  "projectId": 1
+}
+📌 projectId — число без кавычек, равно id из шага 1.
+
+Ожидаемый ответ:
+
+json
+{
+  "id": 1,
+  "hostname": "srv-app-01",
+  "ipAddress": "10.0.0.1",
+  "role": "app",
+  "environment": "dev",
+  "operatingSystem": "Ubuntu 22.04",
+  "cpuCores": 8,
+  "ramGb": 32,
+  "projectId": 1
+}
+📌 Запомните id — это serverId для следующих шагов.
+
+Проверить, что сервер создан
+GET http://localhost:8080/api/servers
+
+Body: нет.
+
+Ответ:
+
+json
+[
+  { "id": 1, "hostname": "srv-app-01", "ipAddress": "10.0.0.1", ... }
+]
+Создать ещё один сервер (опционально, для связностей)
+POST http://localhost:8080/api/servers
+
+json
+{
+  "hostname": "srv-db-01",
+  "ipAddress": "10.0.0.2",
+  "role": "db",
+  "environment": "dev",
+  "operatingSystem": "Ubuntu 22.04",
+  "cpuCores": 16,
+  "ramGb": 64,
+  "projectId": 1
+}
+⚠️ hostname уникален. Если создадите srv-app-01 повторно — получите ошибку Unique index or primary key violation.
+
+Шаг 3. Обновить характеристики сервера (vCPU, RAM)
+PUT http://localhost:8080/api/servers/1/specification
+
+Body:
+
+json
+{
+  "cpuCores": 16,
+  "ramGb": 64
+}
+Замените 1 на ваш serverId.
+
+Ожидаемый ответ: объект сервера с обновлёнными cpuCores и ramGb.
+
+Шаг 4. Добавить диски серверу
+SSD 512 ГБ
+POST http://localhost:8080/api/servers/1/disks
+
+Body:
+
+json
+{
+  "type": "SSD",
+  "capacityGb": 512
+}
+SSD 1024 ГБ
+POST http://localhost:8080/api/servers/1/disks
+
+json
+{
+  "type": "SSD",
+  "capacityGb": 1024
+}
+HDD 4096 ГБ
+POST http://localhost:8080/api/servers/1/disks
+
+json
+{
+  "type": "HDD",
+  "capacityGb": 4096
+}
+📌 type — строго "SSD" или "HDD" в верхнем регистре.
+
+Ожидаемый ответ (пример):
+
+json
+{
+  "id": 1,
+  "type": "SSD",
+  "capacityGb": 512,
+  "serverId": 1
+}
+Список дисков сервера
+GET http://localhost:8080/api/servers/1/disks
+
+Body: нет.
+
+Ответ:
+
+json
+[
+  { "id": 1, "type": "SSD", "capacityGb": 512,  "serverId": 1 },
+  { "id": 2, "type": "SSD", "capacityGb": 1024, "serverId": 1 },
+  { "id": 3, "type": "HDD", "capacityGb": 4096, "serverId": 1 }
+]

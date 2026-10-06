@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.1.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.example</groupId>
     <artifactId>Tsifrovizatsia_infrastrukturnogo_ucheta111</artifactId>
@@ -29,7 +29,6 @@
     <properties>
         <java.version>17</java.version>
 
-        <!-- ДОБАВЛЕНО: версия openapi-generator -->
         <openapi-generator.version>7.7.0</openapi-generator.version>
     </properties>
     <dependencies>
@@ -76,28 +75,24 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- ДОБАВЛЕНО: Swagger UI для просмотра API в браузере -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.6.0</version>
         </dependency>
 
-        <!-- ДОБАВЛЕНО: аннотации, которые использует сгенерированный код -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations-jakarta</artifactId>
             <version>2.2.22</version>
         </dependency>
 
-        <!-- ДОБАВЛЕНО: nullable-типы, используемые сгенерированными моделями -->
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
             <version>0.2.6</version>
         </dependency>
 
-        <!-- ДОБАВЛЕНО: валидация в сгенерированных DTO -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -147,7 +142,6 @@
                 </executions>
             </plugin>
 
-            <!-- ДОБАВЛЕНО: генератор OpenAPI-интерфейсов -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -159,7 +153,6 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- Путь к вашей спецификации -->
                             <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
 
                             <generatorName>spring</generatorName>
@@ -174,17 +167,11 @@
                             <generateModelDocumentation>false</generateModelDocumentation>
 
                             <configOptions>
-                                <!-- Только интерфейсы, без готовых @RestController -->
                                 <interfaceOnly>true</interfaceOnly>
-                                <!-- НЕ включаем delegatePattern, чтобы ваш @RestController реализовывал интерфейс напрямую -->
                                 <delegatePattern>false</delegatePattern>
-                                <!-- Совместимость со Spring Boot 3/4 -->
                                 <useSpringBoot3>true</useSpringBoot3>
-                                <!-- Группировать методы по тегам (по одному интерфейсу на тег) -->
                                 <useTags>true</useTags>
-                                <!-- Не оборачивать всё в Optional/nullable-wrapper -->
                                 <openApiNullable>false</openApiNullable>
-                                <!-- Пропустить генерацию @Generated-оберток -->
                                 <skipDefaultInterface>true</skipDefaultInterface>
                             </configOptions>
                         </configuration>
