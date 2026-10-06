@@ -1,12 +1,17 @@
 package com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.service;
 
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.ConnectivityEntity;
+import ru.example.infrastructure.web.model.ConnectivityRequest;
 
 import java.util.List;
 
 public interface ConnectivityService {
 
-     ConnectivityEntity create(ConnectivityEntity connectivity, Long sourceServerId, Long destinationServerId);
+    ConnectivityEntity create(ConnectivityRequest request, Long sourceServerId, Long destinationServerId);
+
+    List<ConnectivityEntity> findAll();
+
+    ConnectivityEntity findById(Long id);
 
     List<ConnectivityEntity> findBySource(Long serverId);
 
@@ -14,3 +19,4 @@ public interface ConnectivityService {
 
     void delete(Long id);
 }
+

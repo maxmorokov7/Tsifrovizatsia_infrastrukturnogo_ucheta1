@@ -2,6 +2,8 @@ package com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.service;
 
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.DTO.ServerSpecificationDto;
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.ServerEntity;
+import ru.example.infrastructure.web.model.ServerRequest;
+import ru.example.infrastructure.web.model.SpecificationUpdateRequest;
 
 import java.util.List;
 
@@ -13,7 +15,9 @@ public interface ServerService {
 
     List<ServerEntity> findByProject(Long projectId);
 
-    ServerEntity create(ServerEntity server);
+    ServerEntity create(ServerRequest request);
+
+    ServerEntity updateSpecification(Long serverId, SpecificationUpdateRequest request);
 
     ServerSpecificationDto getSpecification(Long serverId);
 

@@ -5,5 +5,5 @@ public record ServerSpecificationDto(
         String hostname,
         Integer cpuCores,
         Integer ramGb,
-        DiskSummaryDto disks
+        DiskSummaryDTO disks
 ) {}

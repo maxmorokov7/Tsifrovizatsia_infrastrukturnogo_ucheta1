@@ -6,6 +6,7 @@ import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.enums.Conne
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.enums.ConnectivityType;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.example.infrastructure.web.model.ConnectivityRequest;
 
 import java.time.LocalDate;
 
@@ -69,4 +70,8 @@ public class ConnectivityEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination_server_id")
     private ServerEntity destinationServer;
+
+    public ConnectivityEntity(ConnectivityRequest connectivity) {
+
+    }
 }

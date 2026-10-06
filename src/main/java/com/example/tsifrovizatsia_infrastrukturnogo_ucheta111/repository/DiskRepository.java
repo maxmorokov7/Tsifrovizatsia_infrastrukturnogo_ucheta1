@@ -10,33 +10,26 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DiskRepository extends JpaRepository<DiskEntity, Long> {
-
     List<DiskEntity> findAllByServerId(Long serverId);
 
-    List<DiskEntity> findAllByServerIdAndType(Long serverId, DiskType type);
+    long countByServerId(Long serverId);
 
     long countByServerIdAndType(Long serverId, DiskType type);
 
-    /**
-     * Суммарный объём всех дисков сервера (0, если дисков нет).
-     */
+    Optional<DiskEntity> findByIdAndServerId(Long id, Long serverId);
+
     @Query("""
            select coalesce(sum(d.capacityGb), 0)
            from DiskEntity d
            where d.server.id = :serverId
            """)
-    Long sumCapacityByServerId(@Param("serverId") Long serverId);
+    long sumCapacityByServerId(@Param("serverId") Long serverId);
 
-    /**
-     * Суммарный объём дисков сервера по типу.
-     */
     @Query("""
            select coalesce(sum(d.capacityGb), 0)
            from DiskEntity d
            where d.server.id = :serverId and d.type = :type
            """)
-    Long sumCapacityByServerIdAndType(@Param("serverId") Long serverId,
+    long sumCapacityByServerIdAndType(@Param("serverId") Long serverId,
                                       @Param("type") DiskType type);
-
-    Optional<DiskEntity> findByIdAndServerId(Long id, Long serverId);
 }

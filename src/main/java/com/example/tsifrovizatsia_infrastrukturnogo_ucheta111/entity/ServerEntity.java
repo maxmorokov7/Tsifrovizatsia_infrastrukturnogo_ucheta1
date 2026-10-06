@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Table(name = "servers")
 @Getter
@@ -14,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = {"project", "disks", "sourceConnectivities", "destinationConnectivities"})
 public class ServerEntity {
 
     @Id
@@ -29,6 +29,7 @@ public class ServerEntity {
     private String role;
     private String environment;
     private String operatingSystem;
+
 
     @Column(name = "cpu_cores")
     private Integer cpuCores;

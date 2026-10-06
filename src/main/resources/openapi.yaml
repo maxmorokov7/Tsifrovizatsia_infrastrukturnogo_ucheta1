@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: Infrastructure API
+  description: API для цифровизации инфраструктурного учёта — серверы, характеристики, диски, связности
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local dev
+
+tags:
+  - name: projects
+    description: Проекты
+  - name: servers
+    description: Серверы и их характеристики
+  - name: disks
+    description: Диски серверов
+  - name: connectivities
+    description: Связности между серверами
+
+paths:
+
+  # ==================== PROJECTS ====================
+
+  /api/projects:
+    get:
+      tags: [projects]
+      operationId: getAllProjects
+      summary: Список всех проектов
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectResponse'
+    post:
+      tags: [projects]
+      operationId: createProject
+      summary: Создать проект
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+
+  /api/projects/{id}:
+    get:
+      tags: [projects]
+      operationId: getProjectById
+      summary: Проект по ID
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+
+  /api/projects/{id}/servers:
+    get:
+      tags: [projects]
+      operationId: getProjectServers
+      summary: Серверы проекта
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServerResponse'
+
+  /api/projects/{id}/servers/{serverId}:
+    post:
+      tags: [projects]
+      operationId: attachServerToProject
+      summary: Привязать сервер к проекту
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - name: serverId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+    delete:
+      tags: [projects]
+      operationId: detachServerFromProject
+      summary: Отвязать сервер от проекта
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - name: serverId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  # ==================== SERVERS ====================
+
+  /api/servers:
+    get:
+      tags: [servers]
+      operationId: getAllServers
+      summary: Список всех серверов
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServerResponse'
+    post:
+      tags: [servers]
+      operationId: createServer
+      summary: Создать сервер
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerResponse'
+
+  /api/servers/{id}:
+    get:
+      tags: [servers]
+      operationId: getServerById
+      summary: Сервер по ID
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerResponse'
+
+  /api/servers/{id}/specification:
+    get:
+      tags: [servers]
+      operationId: getServerSpecification
+      summary: Полная характеристика сервера (vCPU, RAM, диски)
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerSpecificationDto'
+    put:
+      tags: [servers]
+      operationId: updateServerSpecification
+      summary: Обновить vCPU и RAM сервера
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpecificationUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerResponse'
+
+  # ==================== DISKS ====================
+
+  /api/servers/{id}/disks:
+    get:
+      tags: [disks]
+      operationId: getServerDisks
+      summary: Список дисков сервера
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiskResponse'
+    post:
+      tags: [disks]
+      operationId: addDiskToServer
+      summary: Добавить диск серверу
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiskRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiskResponse'
+
+  /api/servers/{id}/disks/summary:
+    get:
+      tags: [disks]
+      operationId: getServerDiskSummary
+      summary: Сводка по дискам сервера (всего / SSD / HDD)
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiskSummaryDto'
+
+  /api/servers/{id}/disks/{diskId}:
+    delete:
+      tags: [disks]
+      operationId: deleteServerDisk
+      summary: Удалить диск у сервера
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - name: diskId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  # ==================== CONNECTIVITIES ====================
+
+  /api/connectivities:
+    get:
+      tags: [connectivities]
+      operationId: getAllConnectivities
+      summary: Список всех связностей
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectivityResponse'
+    post:
+      tags: [connectivities]
+      operationId: createConnectivity
+      summary: Создать связность
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectivityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectivityResponse'
+
+  /api/connectivities/{id}:
+    get:
+      tags: [connectivities]
+      operationId: getConnectivityById
+      summary: Связность по ID
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectivityResponse'
+    delete:
+      tags: [connectivities]
+      operationId: deleteConnectivity
+      summary: Удалить связность
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '204':
+          description: No Content
+
+  /api/connectivities/by-source/{serverId}:
+    get:
+      tags: [connectivities]
+      operationId: getConnectivitiesBySource
+      summary: Связности, где сервер — источник
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectivityResponse'
+
+  /api/connectivities/by-destination/{serverId}:
+    get:
+      tags: [connectivities]
+      operationId: getConnectivitiesByDestination
+      summary: Связности, где сервер — назначение
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectivityResponse'
+
+# ==================== COMPONENTS ====================
+
+components:
+
+  parameters:
+    PathId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+
+    # ---------- PROJECT ----------
+    ProjectRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: "My Project"
+
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        serverCount:
+          type: integer
+
+    # ---------- SERVER ----------
+    ServerRequest:
+      type: object
+      required: [hostname, ipAddress]
+      properties:
+        hostname:
+          type: string
+          example: "srv-01"
+        ipAddress:
+          type: string
+          example: "10.0.0.1"
+        role:
+          type: string
+        environment:
+          type: string
+          example: "dev"
+        operatingSystem:
+          type: string
+        cpuCores:
+          type: integer
+          example: 8
+        ramGb:
+          type: integer
+          example: 32
+        projectId:
+          type: integer
+          format: int64
+
+    ServerResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        hostname:
+          type: string
+        ipAddress:
+          type: string
+        role:
+          type: string
+        environment:
+          type: string
+        operatingSystem:
+          type: string
+        cpuCores:
+          type: integer
+        ramGb:
+          type: integer
+        projectId:
+          type: integer
+          format: int64
+
+    SpecificationUpdateRequest:
+      type: object
+      required: [cpuCores, ramGb]
+      properties:
+        cpuCores:
+          type: integer
+          minimum: 1
+        ramGb:
+          type: integer
+          minimum: 1
+
+    # ---------- SPECIFICATION (ТЗ) ----------
+    ServerSpecificationDto:
+      type: object
+      properties:
+        serverId:
+          type: integer
+          format: int64
+        hostname:
+          type: string
+        cpuCores:
+          type: integer
+          description: Количество ядер ЦП (vCPU)
+        ramGb:
+          type: integer
+          description: Объём ОЗУ в ГБ
+        disks:
+          $ref: '#/components/schemas/DiskSummaryDto'
+
+    DiskSummaryDto:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          format: int64
+        totalCapacityGb:
+          type: integer
+          format: int64
+        ssdCount:
+          type: integer
+          format: int64
+        ssdCapacityGb:
+          type: integer
+          format: int64
+        hddCount:
+          type: integer
+          format: int64
+        hddCapacityGb:
+          type: integer
+          format: int64
+
+    # ---------- DISK ----------
+    DiskRequest:
+      type: object
+      required: [type, capacityGb]
+      properties:
+        type:
+          type: string
+          enum: [SSD, HDD]
+        capacityGb:
+          type: integer
+          format: int64
+          minimum: 1
+
+    DiskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [SSD, HDD]
+        capacityGb:
+          type: integer
+          format: int64
+        serverId:
+          type: integer
+          format: int64
+
+    # ---------- CONNECTIVITY ----------
+    ConnectivityRequest:
+      type: object
+      required: [type, direction, expirationType, status]
+      properties:
+        type:
+          type: string
+          enum: [INTERNAL, EXTERNAL]
+        service:
+          type: string
+        direction:
+          type: string
+          enum: [INBOUND, OUTBOUND, BIDIRECTIONAL]
+        subnetName:
+          type: string
+        sourceAddress:
+          type: string
+        destinationAddress:
+          type: string
+        protocolsAndPorts:
+          type: string
+        accessJustification:
+          type: string
+        expirationType:
+          type: string
+          enum: [PERMANENT, UNTIL_DATE]
+        expirationDate:
+          type: string
+          format: date
+        requestNumber:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING]
+        note:
+          type: string
+        sourceServerId:
+          type: integer
+          format: int64
+        destinationServerId:
+          type: integer
+          format: int64
+
+    ConnectivityResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [INTERNAL, EXTERNAL]
+        service:
+          type: string
+        direction:
+          type: string
+          enum: [INBOUND, OUTBOUND, BIDIRECTIONAL]
+        subnetName:
+          type: string
+        sourceAddress:
+          type: string
+        destinationAddress:
+          type: string
+        protocolsAndPorts:
+          type: string
+        accessJustification:
+          type: string
+        expirationType:
+          type: string
+          enum: [PERMANENT, UNTIL_DATE]
+        expirationDate:
+          type: string
+          format: date
+        requestNumber:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, PENDING]
+        note:
+          type: string
+        sourceServerId:
+          type: integer
+          format: int64
+        destinationServerId:
+          type: integer
+          format: int64

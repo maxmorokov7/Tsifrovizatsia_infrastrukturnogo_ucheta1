@@ -19,16 +19,10 @@ public class DiskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Тип диска: SSD / HDD
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private DiskType type;
 
-    /**
-     * Объем одного диска в ГБ
-     */
     @Column(name = "capacity_gb", nullable = false)
     private Long capacityGb;
 

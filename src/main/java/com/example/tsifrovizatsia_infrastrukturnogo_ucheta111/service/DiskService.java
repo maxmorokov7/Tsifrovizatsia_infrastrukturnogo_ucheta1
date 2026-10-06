@@ -1,6 +1,6 @@
 package com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.service;
 
-import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.DTO.DiskSummaryDto;
+import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.DTO.DiskSummaryDTO;
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.DiskEntity;
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.ServerEntity;
 import com.example.tsifrovizatsia_infrastrukturnogo_ucheta111.entity.enums.DiskType;
@@ -22,6 +22,6 @@ public interface DiskService {
 
     long countByType(Long serverId, DiskType type);
 
-    DiskSummaryDto summarize(Long serverId);
+    DiskSummaryDTO summarize(Long serverId);
 
 }
